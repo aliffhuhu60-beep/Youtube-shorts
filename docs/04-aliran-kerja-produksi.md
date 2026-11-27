@@ -5,7 +5,7 @@
 | Langkah | Percuma | Naik taraf (pilihan) |
 |---|---|---|
 | Kajian & skrip | ChatGPT/Claude (draf) + Wikipedia → sumber asal | — |
-| Suara | Suara sendiri (telefon + selimut = "studio"), CapCut TTS | ElevenLabs Starter (lesen komersial) |
+| Suara | **Kokoro `bm_george` via `tools/voice_kokoro.py`** (suara jenama Wondrift, percuma, Apache-2.0), atau suara sendiri | ElevenLabs Starter (lesen komersial) |
 | Visual | Canva, Ideogram/Leonardo (kuota percuma), Pexels/NASA | Canva Pro, Midjourney / Firefly |
 | Suntingan | CapCut Desktop, DaVinci Resolve, `tools/make_short.py` | — |
 | Sari kata | Auto-caption CapCut, atau fail `.srt` sendiri | — |
@@ -23,9 +23,12 @@
    - Baca kuat-kuat; buang setiap perkataan yang tidak perlu.
 4. **Suara (10 min)** — rakam/eksport `voice.mp3`. Buang senyap di awal.
 5. **Visual (20 min)** — 8–15 gambar 1080×1920 gaya *Paper Atlas* (satu setiap 2–3 saat). Namakan `01.png, 02.png…`
-6. **Pemasangan (10 min)** — 
+6. **Pemasangan (10 min)** — tulis skrip satu baris = satu babak dalam `script.txt`, satu gambar setiap baris:
    ```bash
-   python3 tools/make_short.py --images shorts/ep01/img --audio shorts/ep01/voice.mp3 --srt shorts/ep01/subs.srt --out shorts/ep01/final.mp4
+   .venv/bin/python tools/voice_kokoro.py shorts/ep03/script.txt --out shorts/ep03
+   ```
+   ```bash
+   python3 tools/make_short.py --images shorts/ep03/img --audio shorts/ep03/voice.mp3 --srt shorts/ep03/subs.srt --caption-pos bottom --durations $(cat shorts/ep03/durations.txt) --out shorts/ep03/final.mp4
    ```
    Atau buat dalam CapCut: tambah zoom perlahan (Ken Burns), sari kata besar, whoosh kertas.
 7. **Muzik** — latar belakang -25 dB hingga -30 dB di bawah suara (Audio Library).

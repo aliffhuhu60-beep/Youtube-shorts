@@ -20,6 +20,7 @@ Melayu; semua kandungan video (skrip, tajuk, deskripsi) dalam Bahasa Inggeris.
 | [templates/](templates/) | Templat skrip, tajuk & deskripsi |
 | [assets/](assets/) | Logo (`logo.svg`) & banner (`banner.svg`) asal — milik anda sepenuhnya |
 | [tools/make_short.py](tools/make_short.py) | Skrip Python + ffmpeg: gabung gambar + suara + sari kata → video 9:16 |
+| [tools/voice_kokoro.py](tools/voice_kokoro.py) | Suara AI percuma (Kokoro, lesen Apache-2.0) + sari kata bermasa. Suara jenama: `bm_george` |
 | [tracker/video-tracker.csv](tracker/video-tracker.csv) | Jejak setiap video & prestasinya |
 
 ## Mula dalam 7 hari
