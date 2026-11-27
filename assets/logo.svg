@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800">
+  <title>Curio Atlas logo — paper-cutout globe</title>
+  <defs>
+    <filter id="paper" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#000" flood-opacity="0.35"/>
+    </filter>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7"/>
+      <feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.08 0"/>
+      <feComposite in2="SourceGraphic" operator="in"/>
+    </filter>
+    <clipPath id="globe"><circle cx="400" cy="400" r="250"/></clipPath>
+  </defs>
+
+  <!-- background -->
+  <rect width="800" height="800" fill="#14213D"/>
+  <rect width="800" height="800" fill="#fff" filter="url(#grain)"/>
+
+  <!-- outer paper ring -->
+  <circle cx="400" cy="400" r="300" fill="#E9C46A" filter="url(#paper)"/>
+  <circle cx="400" cy="400" r="272" fill="#F4EDE1" filter="url(#paper)"/>
+
+  <!-- globe (ocean) -->
+  <circle cx="400" cy="400" r="250" fill="#2A9D8F" filter="url(#paper)"/>
+
+  <!-- continents as cut-paper blobs -->
+  <g clip-path="url(#globe)" filter="url(#paper)">
+    <path fill="#F4EDE1" d="M190 250c40-50 120-70 170-40 30 18 20 60-10 80-40 26-30 70-70 90-50 25-90-20-110-60-15-30 0-50 20-70z"/>
+    <path fill="#E76F51" d="M430 200c60-20 150 10 190 60 25 32 0 70-40 70-45 0-60 40-100 30-50-12-90-70-80-110 5-25 10-42 30-50z"/>
+    <path fill="#E9C46A" d="M360 430c50-20 110 0 130 50 22 55-20 120-70 140-45 18-90-20-95-70-4-45 0-105 35-120z"/>
+    <path fill="#F4EDE1" d="M560 430c40 0 70 30 60 70-8 35-50 50-80 30-30-20-25-100 20-100z"/>
+  </g>
+
+  <!-- latitude / longitude cut lines -->
+  <g fill="none" stroke="#14213D" stroke-opacity="0.35" stroke-width="5" clip-path="url(#globe)">
+    <ellipse cx="400" cy="400" rx="250" ry="90"/>
+    <ellipse cx="400" cy="400" rx="110" ry="250"/>
+    <line x1="150" y1="400" x2="650" y2="400"/>
+  </g>
+
+  <!-- curio star -->
+  <g filter="url(#paper)" transform="translate(600 205)">
+    <path fill="#E9C46A" d="M0-70 18-18 70 0 18 18 0 70-18 18-70 0-18-18z"/>
+    <circle r="12" fill="#E76F51"/>
+  </g>
+
+  <!-- monogram -->
+  <g filter="url(#paper)">
+    <rect x="245" y="590" width="310" height="110" rx="55" fill="#14213D"/>
+    <text x="400" y="667" text-anchor="middle" font-family="Montserrat, 'Arial Black', Arial, sans-serif"
+          font-weight="900" font-size="72" letter-spacing="10" fill="#F4EDE1">CA</text>
+  </g>
+</svg>

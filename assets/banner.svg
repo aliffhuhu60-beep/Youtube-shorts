@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2560 1440" width="2560" height="1440">
+  <title>Curio Atlas channel banner</title>
+  <defs>
+    <filter id="paper" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="14" stdDeviation="14" flood-color="#000" flood-opacity="0.35"/>
+    </filter>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" seed="3"/>
+      <feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.07 0"/>
+      <feComposite in2="SourceGraphic" operator="in"/>
+    </filter>
+  </defs>
+
+  <rect width="2560" height="1440" fill="#14213D"/>
+  <rect width="2560" height="1440" fill="#fff" filter="url(#grain)"/>
+
+  <!-- stars -->
+  <g fill="#E9C46A">
+    <circle cx="300" cy="200" r="6"/><circle cx="520" cy="330" r="4"/><circle cx="2100" cy="240" r="7"/>
+    <circle cx="2300" cy="420" r="4"/><circle cx="1800" cy="160" r="5"/><circle cx="760" cy="150" r="5"/>
+    <circle cx="1100" cy="260" r="3"/><circle cx="1500" cy="300" r="4"/>
+  </g>
+
+  <!-- planet top-right (Saturn-like) -->
+  <g filter="url(#paper)" transform="translate(2150 330)">
+    <circle r="120" fill="#E76F51"/>
+    <ellipse rx="210" ry="40" fill="none" stroke="#E9C46A" stroke-width="22" transform="rotate(-15)"/>
+  </g>
+
+  <!-- layered paper hills / waves -->
+  <path filter="url(#paper)" fill="#264A6E" d="M0 980C300 880 560 900 860 960s620 40 900-20 600-60 800 0V1440H0z"/>
+  <path filter="url(#paper)" fill="#2A9D8F" d="M0 1080c260-60 520-40 820 20s560 60 880 0 620-60 860 0V1440H0z"/>
+  <path filter="url(#paper)" fill="#E9C46A" d="M0 1220c300-50 600-30 900 10s640 30 980-10 500-20 680 10V1440H0z"/>
+  <path filter="url(#paper)" fill="#F4EDE1" d="M0 1330c400-40 800-20 1280 10s860 10 1280-20V1440H0z"/>
+
+  <!-- safe area content (1546 x 423 centred) -->
+  <g filter="url(#paper)">
+    <text x="1280" y="700" text-anchor="middle" font-family="Montserrat, 'Arial Black', Arial, sans-serif"
+          font-weight="900" font-size="170" letter-spacing="12" fill="#F4EDE1">CURIO ATLAS</text>
+  </g>
+  <text x="1280" y="800" text-anchor="middle" font-family="Lora, Georgia, serif" font-style="italic"
+        font-size="64" fill="#E9C46A">The world's strangest facts — one short at a time</text>
+  <text x="1280" y="880" text-anchor="middle" font-family="Montserrat, Arial, sans-serif" font-weight="700"
+        font-size="42" letter-spacing="6" fill="#F4EDE1" fill-opacity="0.8">NEW SHORTS DAILY · SPACE · OCEANS · HISTORY · WHAT IF</text>
+</svg>
