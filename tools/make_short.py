@@ -28,7 +28,10 @@ def duration(path: Path) -> float:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--images", required=True, help="folder of images, used in filename order")
+    src = ap.add_mutually_exclusive_group(required=True)
+    src.add_argument("--images", help="folder of images, used in filename order")
+    src.add_argument("--frames", help="folder of pre-rendered 1080x1920 JPEG frames 00000.jpg... (tools/render_frames.js)")
+    ap.add_argument("--fps", type=int, default=FPS, help="frame rate of --frames (default 30)")
     ap.add_argument("--audio", required=True, help="voiceover file (mp3/wav)")
     ap.add_argument("--srt", help="optional subtitle file burned in as big centred captions")
     ap.add_argument("--music", help="optional background music (YouTube Audio Library etc.)")
@@ -37,13 +40,24 @@ def main() -> None:
                     "the last image is stretched to the end of the audio. Default: equal split")
     ap.add_argument("--caption-pos", choices=["center", "bottom"], default="center",
                     help="caption position; bottom sits just above the YouTube Shorts UI")
+    ap.add_argument("--caption-style", choices=["paper", "neon"], default="paper",
+                    help="paper = cream text, navy outline; neon = white text, magenta glow outline")
     ap.add_argument("--out", required=True, help="output .mp4")
     a = ap.parse_args()
 
+    total = duration(Path(a.audio)) + 0.3
+    if a.frames:
+        images = []
+        cmd = ["ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
+               "-framerate", str(a.fps), "-i", str(Path(a.frames) / "%05d.jpg"), "-i", a.audio]
+        if a.music:
+            cmd += ["-stream_loop", "-1", "-i", a.music]
+        audio_idx = 1
+        parts = [f"[0:v]scale={W}:{H},setsar=1,format=yuv420p[vc]"]
+        return finish(a, cmd, parts, audio_idx, total, "frames")
     images = sorted(p for p in Path(a.images).iterdir() if p.suffix.lower() in IMG_EXT)
     if not images:
         sys.exit(f"No images found in {a.images}")
-    total = duration(Path(a.audio)) + 0.3
     if a.durations:
         durs = [float(x) for x in a.durations.split(",")]
         if len(durs) != len(images):
@@ -72,13 +86,18 @@ def main() -> None:
         )
     concat_in = "".join(f"[v{i}]" for i in range(len(images)))
     parts.append(f"{concat_in}concat=n={len(images)}:v=1:a=0[vc]")
+    finish(a, cmd, parts, audio_idx, total, f"{len(images)} images")
+
+
+def finish(a, cmd, parts, audio_idx, total, what):
 
     vlast = "vc"
     if a.srt:
         srt = str(Path(a.srt).resolve()).replace("\\", "/").replace(":", r"\:").replace("'", r"\'")
         pos = "Alignment=2,MarginV=62" if a.caption_pos == "bottom" else "Alignment=10,MarginV=0"
-        style = ("FontName=Montserrat ExtraBold,Fontsize=20,Bold=1,PrimaryColour=&H00E1EDF4,"
-                 f"OutlineColour=&H003D2114,BorderStyle=1,Outline=3,Shadow=1,{pos}")
+        look = {"paper": "FontName=Montserrat ExtraBold,PrimaryColour=&H00E1EDF4,OutlineColour=&H003D2114,Outline=3,Shadow=1",
+                "neon": "FontName=Inter Black,PrimaryColour=&H00FFFFFF,OutlineColour=&H00B56FFF,Outline=2.5,Shadow=0"}
+        style = f"{look[a.caption_style]},Fontsize=20,Bold=1,BorderStyle=1,{pos}"
         parts.append(f"[vc]subtitles='{srt}':force_style='{style}'[vs]")
         vlast = "vs"
 
@@ -94,7 +113,7 @@ def main() -> None:
             "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", a.out]
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     subprocess.run(cmd, check=True)
-    print(f"✅ {a.out}  ({total:.1f}s, {len(images)} images)")
+    print(f"✅ {a.out}  ({total:.1f}s, {what})")
 
 
 if __name__ == "__main__":

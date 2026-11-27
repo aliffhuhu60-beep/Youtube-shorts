@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Free, local AI voiceover with Kokoro (Apache-2.0, commercial use OK) + timed captions.
 
-Reads a script file (one narration line per row), voices every line, joins them with a short
+Reads a script file (one narration line per row; write "spoken words || caption text" to speak
+numbers as words but show them as digits), voices every line, joins them with a short
 pause, and writes:
   voice.mp3      the narration
   durations.txt  seconds per line (pass to make_short.py --durations, one image per line)
@@ -63,10 +64,13 @@ def main() -> None:
 
     audio, durs, srt, n, t, sr = [], [], [], 1, 0.0, 24000
     for line in lines:
-        samples, sr = tts.create(line, voice=a.voice, speed=a.speed, lang="en-gb")
+        # "spoken text || caption text" lets numbers be spoken as words but shown as digits
+        spoken, _, caption = line.partition("||")
+        spoken, caption = spoken.strip(), (caption.strip() or spoken.strip())
+        samples, sr = tts.create(spoken, voice=a.voice, speed=a.speed, lang="en-gb")
         samples = np.concatenate([samples, np.zeros(int(GAP * sr), dtype=samples.dtype)])
         d = len(samples) / sr
-        parts = chunk(line)
+        parts = chunk(caption)
         total_chars = sum(len(p) for p in parts)
         pt = t + 0.03
         for p in parts:

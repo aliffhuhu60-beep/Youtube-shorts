@@ -1,0 +1,145 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- EP03 "How deep the ocean really goes" — Neon Abyss style. Driven frame-by-frame by tools/render_frames.js -->
+<style>
+  html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#04121f}
+  #bg{position:absolute;inset:0}
+  #world{position:absolute;left:0;top:0;width:1080px;will-change:transform}
+  #snow{position:absolute;inset:0}
+  #hud{position:absolute;top:110px;left:0;right:0;text-align:center;font-family:'JetBrains Mono',monospace;color:#E8FFFD}
+  #depth{font-size:120px;font-weight:800;letter-spacing:-2px;text-shadow:0 0 18px #3FF5E8,0 0 50px #3FF5E888}
+  #depth small{font-size:60px;opacity:.8;margin-left:10px}
+  #zone{font-family:Inter,sans-serif;font-weight:800;font-size:34px;letter-spacing:10px;color:#FF6FB5;text-shadow:0 0 14px #FF6FB5aa,0 2px 6px #000c;margin-top:6px}
+  #bar{position:absolute;left:48px;top:420px;width:10px;height:760px;border-radius:6px;background:#ffffff18}
+  #fill{position:absolute;left:0;top:0;width:100%;border-radius:6px;background:linear-gradient(#3FF5E8,#FF6FB5);box-shadow:0 0 16px #3FF5E8}
+  #bar span{position:absolute;left:22px;font:700 22px 'JetBrains Mono',monospace;color:#ffffff70;white-space:nowrap}
+  #vig{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,transparent 45%,#000a 100%)}
+</style></head>
+<body>
+<canvas id="bg" width="1080" height="1920"></canvas>
+<svg id="world" xmlns="http://www.w3.org/2000/svg" width="1080"></svg>
+<canvas id="snow" width="1080" height="1920"></canvas>
+<div id="vig"></div>
+<div id="bar"><div id="fill"></div><span style="top:-8px">0 m</span><span style="top:740px">10,935 m</span></div>
+<div id="hud"><div id="depth">0<small>m</small></div><div id="zone">SURFACE</div></div>
+<script>
+const CY = 470;          // screen y where the current marker sits
+const GAP = 1500;        // world px between markers
+const Y0 = 1300;         // world y of the surface marker
+const D = [0, 40, 200, 332, 828, 1000, 2000, 3800, 8336, 8849, 10935];
+const Y = D.map((_, i) => Y0 + i * GAP);
+const LABEL = ['', 'RECREATIONAL DIVE LIMIT', 'TWILIGHT ZONE', 'DEEPEST SCUBA DIVE', 'BURJ KHALIFA', 'MIDNIGHT ZONE',
+               'SPERM WHALE TERRITORY', 'RMS TITANIC', 'DEEPEST FISH FILMED', 'EVEREST IS 8,849 m TALL', 'CHALLENGER DEEP'];
+const ZONES = [[0, 'SURFACE'], [5, 'SUNLIGHT ZONE'], [200, 'TWILIGHT ZONE'], [1000, 'MIDNIGHT ZONE'], [4000, 'ABYSS'], [6000, 'HADAL ZONE']];
+const C1 = '#3FF5E8', C2 = '#FF6FB5', C3 = '#FFD166';
+const H = Y[Y.length - 1] + 2600;
+const svg = document.getElementById('world');
+svg.setAttribute('height', H); svg.setAttribute('viewBox', `0 0 1080 ${H}`);
+
+const g = (stroke, w = 6) => `fill="none" stroke="${stroke}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"`;
+let s = `<defs><filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+  <feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFB36B"/><stop offset="1" stop-color="#FF6FB5"/></linearGradient></defs>`;
+
+// sky + sun + surface waves
+s += `<rect x="0" y="0" width="1080" height="${Y0}" fill="url(#sky)" opacity=".9"/>
+  <circle cx="540" cy="${Y0 - 330}" r="150" fill="#FFF1C9" filter="url(#glow)"/>
+  <path d="M0 ${Y0} ${Array.from({length: 13}, (_, i) => `Q${i * 90 + 45} ${Y0 - 28} ${i * 90 + 90} ${Y0}`).join(' ')}" ${g('#E8FFFD', 8)}/>
+  <rect x="0" y="${Y0}" width="1080" height="${H}" fill="#0000"/>`;
+// sun rays fading out by 200 m
+for (let i = 0; i < 6; i++) s += `<path d="M${260 + i * 110} ${Y0 + 40} L${200 + i * 140} ${Y[2] - 200}" stroke="#FFF1C9" stroke-width="40" opacity="${0.10 - i * 0.008}"/>`;
+
+// depth marker lines + labels
+for (let i = 1; i < D.length; i++) {
+  s += `<line x1="110" x2="1040" y1="${Y[i]}" y2="${Y[i]}" stroke="${C1}" stroke-width="3" stroke-dasharray="18 16" opacity=".55"/>
+    <text x="1040" y="${Y[i] - 22}" text-anchor="end" font-family="JetBrains Mono" font-weight="800" font-size="44" fill="${C1}" filter="url(#glow)">${D[i].toLocaleString('en-US')} m</text>
+    <text x="1040" y="${Y[i] + 58}" text-anchor="end" font-family="Inter" font-weight="800" font-size="30" letter-spacing="4" fill="${C2}">${LABEL[i]}</text>`;
+}
+const at = (i, dy = 0) => Y[i] + dy;
+// 1 diver
+s += `<g transform="translate(470 ${at(1, 260)}) rotate(-15)" ${g(C1)}>
+  <circle cx="0" cy="0" r="34"/><path d="M28 -12 h34 v24 h-34"/><rect x="-60" y="38" width="44" height="120" rx="20"/>
+  <path d="M-10 40 Q30 120 0 230 M0 230 L-30 330 M0 230 L40 325 M-30 330 l-40 50 h60z M40 325 l-10 60 h60z M10 80 L120 140 M10 80 L-110 150"/></g>`;
+// 2 fading light
+s += `<g ${g(C3, 5)}><circle cx="430" cy="${at(2, 420)}" r="60" stroke-dasharray="10 14"/><path d="M430 ${at(2, 330)} v-60 M520 ${at(2, 420)} h60 M340 ${at(2, 420)} h-60"/></g>`;
+// 3 record diver (deeper, smaller) + rope
+s += `<path d="M560 ${at(3, -1400)} V${at(3, 330)}" stroke="${C3}" stroke-width="4" stroke-dasharray="6 12" opacity=".7"/>
+  <g transform="translate(560 ${at(3, 330)}) scale(.7) rotate(170)" ${g(C1)}><circle r="34"/><path d="M-10 40 Q30 120 0 230 M0 230 L-30 330 M0 230 L40 325 M10 80 L120 140 M10 80 L-110 150"/></g>`;
+// 4 Burj Khalifa: tip at the surface, base at 828 m
+{ const top = Y0 - 60, base = Y[4], x = 640, h = base - top;
+  const lv = [[0, 4], [.12, 10], [.3, 22], [.5, 38], [.7, 56], [.85, 74], [1, 90]];
+  const L = lv.map(([f, w]) => `${x - w},${top + h * f}`).join(' '), R = lv.map(([f, w]) => `${x + w},${top + h * f}`).reverse().join(' ');
+  s += `<polygon points="${L} ${R}" ${g(C2, 5)} opacity=".95"/>`;
+  for (let k = 1; k < 30; k++) s += `<line x1="${x - 12}" x2="${x + 12}" y1="${top + h * k / 30}" y2="${top + h * k / 30}" stroke="${C2}" stroke-width="2" opacity=".35"/>`; }
+// 5 jellyfish
+for (const [jx, jy, sc] of [[380, 380, 1], [780, 240, .7], [220, 620, .55]])
+  s += `<g transform="translate(${jx} ${at(5, jy)}) scale(${sc})" ${g(C2, 6)}><path d="M-90 0 Q0 -150 90 0 Q45 -20 0 0 Q-45 -20 -90 0"/>
+    <path d="M-60 0 q-20 60 10 130 M-20 0 q20 80 -10 170 M20 0 q-20 70 15 150 M60 0 q20 60 -10 120"/></g>`;
+// 6 sperm whale + squid
+s += `<g transform="translate(420 ${at(6, 380)}) rotate(8) scale(.85)" ${g(C1, 7)}>
+  <path d="M0 0 h300 q60 0 60 70 v40 q0 70 -80 70 h-80 Q100 200 -60 160 L-300 120 L-380 60 l-40 -70 M-380 60 l-50 80"/>
+  <path d="M290 150 h70 M240 60 m-8 0 a8 8 0 1 0 16 0 a8 8 0 1 0 -16 0"/></g>
+  <g transform="translate(860 ${at(6, 380)}) rotate(-20) scale(.8)" ${g(C2, 5)}><path d="M0 -150 L-40 -50 Q-40 40 0 60 Q40 40 40 -50z"/>
+  <path d="M-25 60 q-30 90 0 160 M-8 60 q-10 100 10 190 M8 60 q15 80 -5 150 M25 60 q40 80 20 140"/></g>`;
+// 7 Titanic (broken in two)
+s += `<g transform="translate(140 ${at(7, 380)})" ${g(C3, 6)}>
+  <path d="M0 0 L380 0 L360 110 L40 110 Z M70 0 v-60 h36 v60 M150 0 v-60 h36 v60 M230 0 v-60 h36 v60"/>
+  <path d="M500 40 L800 20 L780 120 L520 140 Z M560 30 v-55 h36 v55" transform="rotate(14 640 80)"/>
+  <path d="M-40 120 Q400 190 860 130" stroke-dasharray="8 14"/></g>`;
+// 8 snailfish
+s += `<g transform="translate(560 ${at(8, 380)})" ${g(C1, 6)}><path d="M-150 0 Q-150 -90 -40 -80 Q120 -60 260 0 Q120 60 -40 80 Q-150 90 -150 0z"/>
+  <circle cx="-95" cy="-18" r="12"/><path d="M-20 -78 Q60 -140 200 -20 M-20 78 Q60 140 200 20"/></g>`;
+// 9 Everest outline with flag
+s += `<g transform="translate(540 ${at(9, 720)})" ${g(C2, 6)}><path d="M-360 0 L-160 -260 L-90 -190 L0 -420 L120 -230 L190 -280 L360 0"/>
+  <path d="M0 -420 v-80 l70 25 l-70 25" stroke="${C3}"/><path d="M-60 -330 l40 30 l30 -40 l30 30" opacity=".7"/></g>`;
+// 10 trench floor + gauge
+s += `<path d="M0 ${at(10, 690)} L120 ${at(10, 640)} L230 ${at(10, 720)} L380 ${at(10, 660)} L540 ${at(10, 750)} L700 ${at(10, 650)} L860 ${at(10, 710)} L1080 ${at(10, 630)} V${H} H0z" fill="#0a0f1a" ${g(C1, 5)}/>
+  <g transform="translate(540 ${at(10, 380)})" ${g(C3, 6)}><circle r="150"/><path d="M0 0 L95 -80"/><circle r="10"/>
+  <text y="80" text-anchor="middle" font-family="JetBrains Mono" font-weight="800" font-size="44" fill="${C3}" stroke="none">1,086 bar</text></g>`;
+svg.innerHTML = s;
+
+// ---- animation state ----
+let STARTS = [], DURS = [];
+window.setup = (data) => { DURS = data.durations; let t = 0; STARTS = DURS.map(d => (t += d) - d); };
+const ease = (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+function camAt(t) {
+  const n = STARTS.length;
+  if (t < STARTS[1]) { const d = DURS[0], k = Math.min(1, t / d); return Y0 - 600 + (Y[1] - (Y0 - 600)) * (k < .55 ? k * .25 / .55 : .25 + .75 * ease((k - .55) / .45)); }
+  for (let i = 1; i < n; i++) {
+    const st = STARTS[i], d = DURS[i], mi = Math.min(i, Y.length - 1), next = Y[Math.min(i + 1, Y.length - 1)];
+    if (t < st + d || i === n - 1) {
+      const k = Math.min(1, (t - st) / d), hold = .55;
+      if (mi === Y.length - 1 || i >= Y.length - 1) return Y[Y.length - 1] + 60 * k;
+      return k < hold ? Y[mi] + 40 * (k / hold) : Y[mi] + 40 + (next - Y[mi] - 40) * ease((k - hold) / (1 - hold));
+    }
+  }
+}
+function depthAt(yw) {
+  if (yw <= Y0) return 0;
+  for (let i = 0; i < Y.length - 1; i++) if (yw <= Y[i + 1]) return D[i] + (D[i + 1] - D[i]) * (yw - Y[i]) / GAP;
+  return D[D.length - 1];
+}
+const bg = document.getElementById('bg').getContext('2d'), sn = document.getElementById('snow').getContext('2d');
+const mix = (a, b, k) => a.map((v, i) => Math.round(v + (b[i] - v) * k));
+const COL = [[0, [14, 96, 140]], [200, [5, 40, 70]], [1000, [3, 14, 30]], [4000, [2, 6, 14]], [11000, [0, 2, 6]]];
+function colorAt(d) { for (let i = 0; i < COL.length - 1; i++) if (d <= COL[i + 1][0]) return mix(COL[i][1], COL[i + 1][1], (d - COL[i][0]) / (COL[i + 1][0] - COL[i][0])); return COL[COL.length - 1][1]; }
+const FLAKES = Array.from({length: 160}, (_, i) => ({x: (i * 7919) % 1080, y: (i * 104729) % 4000, r: 1 + (i % 4), p: .35 + (i % 5) * .15}));
+
+window.renderFrame = (t) => {
+  const cam = camAt(t), yw = cam, d = depthAt(yw);
+  document.getElementById('world').style.transform = `translateY(${CY - cam}px)`;
+  const [r, gg, b] = colorAt(d), [r2, g2, b2] = colorAt(Math.min(11000, d * 1.6 + 300));
+  const grd = bg.createLinearGradient(0, 0, 0, 1920);
+  grd.addColorStop(0, `rgb(${r},${gg},${b})`); grd.addColorStop(1, `rgb(${r2},${g2},${b2})`);
+  bg.fillStyle = grd; bg.fillRect(0, 0, 1080, 1920);
+  sn.clearRect(0, 0, 1080, 1920);
+  if (yw > Y0 - 200) for (const f of FLAKES) {
+    const y = ((f.y - cam * f.p + t * 18) % 4000 + 4000) % 4000 - 1000;
+    if (y < 0 || y > 1920) continue;
+    sn.fillStyle = `rgba(200,255,250,${.15 + f.p * .25})`; sn.beginPath(); sn.arc(f.x + Math.sin(t + f.y) * 6, y, f.r, 0, 7); sn.fill();
+  }
+  document.getElementById('depth').innerHTML = `${Math.round(d).toLocaleString('en-US')}<small>m</small>`;
+  document.getElementById('zone').textContent = ZONES.filter(z => d >= z[0]).pop()[1];
+  document.getElementById('fill').style.height = `${Math.min(100, d / 10935 * 100)}%`;
+};
+</script></body></html>
