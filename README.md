@@ -1,10 +1,10 @@
-# 🌍 Curio Atlas — Projek Channel YouTube Faceless (English)
+# 🌍 Wondrift — Projek Channel YouTube Faceless (English)
 
 Projek lengkap untuk membina channel YouTube **faceless** dalam **Bahasa Inggeris** (audiens global),
 fokus pada **YouTube Shorts** dan disusuli video panjang. Semua dokumen panduan ditulis dalam Bahasa
 Melayu; semua kandungan video (skrip, tajuk, deskripsi) dalam Bahasa Inggeris.
 
-> **Nama channel cadangan utama: `Curio Atlas`** — "curious facts from every corner of the world".
+> **Nama channel cadangan utama: `Wondrift`** — *Wonder + Drift* — "drift through the world's wonders". Nama ciptaan baharu: carian web tidak menjumpai sebarang channel/jenama lain dengan nama ini (Nov 2026).
 > Alternatif ada dalam [docs/02-jenama-channel.md](docs/02-jenama-channel.md).
 
 ## Struktur projek
@@ -24,8 +24,8 @@ Melayu; semua kandungan video (skrip, tajuk, deskripsi) dalam Bahasa Inggeris.
 
 ## Mula dalam 7 hari
 
-1. **Hari 1** — Baca `docs/02` & `docs/03`. Cipta akaun Google baharu khas untuk channel, buat channel `Curio Atlas`, pasang 2-Step Verification.
-2. **Hari 2** — Upload `assets/logo.svg` (tukar ke PNG 800×800) & `assets/banner.svg` (2560×1440). Isi About, link, keyword.
+1. **Hari 1** — Baca `docs/02` & `docs/03`. Cipta akaun Google baharu khas untuk channel, buat channel `Wondrift`, pasang 2-Step Verification.
+2. **Hari 2** — Upload `assets/logo.png` (800×800) & `assets/banner.png` (2560×1440). Isi About, link, keyword.
 3. **Hari 3** — Pilih 3 skrip dari `content/skrip-30-hari.md`. Jana suara & visual ikut `docs/04`.
 4. **Hari 4–5** — Hasilkan 3 Short pertama dengan `tools/make_short.py` atau CapCut.
 5. **Hari 6** — Semak senarai semak legal (`docs/03`) → upload. 

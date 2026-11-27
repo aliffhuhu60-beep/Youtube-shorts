@@ -22,7 +22,7 @@
 6. **Satu topik, satu "wow"** — jangan padatkan 5 fakta; satu fakta yang diceritakan dengan baik menang.
 7. **Siri** — "Part 1/2/3", "Day 12 of…" membina tabiat tonton.
 
-## B. Niche dipilih: **Curious Facts Atlas** (Sains + Sejarah + Geografi + "What if")
+## B. Niche dipilih: **Wondrift Facts** (Sains + Sejarah + Geografi + "What if")
 
 **Kenapa:**
 - **Evergreen** — fakta tentang lautan, angkasa, tamadun tidak basi; video lama terus dapat tontonan.

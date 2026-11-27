@@ -1,4 +1,4 @@
-# Script Template — Curio Atlas Short
+# Script Template — Wondrift Short
 
 **Episode #:**   **Pillar:** 🌊 / 🚀 / 🏛️ / 🧠 / ❓
 **Working title (≤ 60 chars):**

@@ -1,23 +1,26 @@
 # 02 — Jenama Channel: Nama, Gambar & Gaya Seni
 
-## A. Cadangan nama (global, mudah sebut, mudah eja)
+## A. Nama channel — nama ciptaan sendiri (unik)
+
+Nama dicipta dari gabungan perkataan, bukan perkataan biasa, supaya **tiada orang lain guna**.
+Carian web (27 Nov 2026) bagi nama tepat **"Wondrift"**, **"Oddlume"** dan **"Papyrlume"** tidak menjumpai
+sebarang channel, syarikat atau jenama.
 
 | # | Nama | Handle | Maksud / kenapa sesuai |
 |---|---|---|---|
-| ⭐ 1 | **Curio Atlas** | `@CurioAtlas` | *Curio* (benda unik/ingin tahu) + *Atlas* (peta dunia). Luas: sains, sejarah, angkasa. **Cadangan utama.** |
-| 2 | **Odd Orbit** | `@OddOrbit` | Pendek, bunyi aliterasi, sesuai jika lebih fokus angkasa & sains. |
-| 3 | **Tiny Wonders** | `@TinyWonders` | Mesra keluarga, sesuai Shorts ringkas. |
-| 4 | **The Quiet Archive** | `@QuietArchive` | Nada misteri / sejarah, sesuai video panjang "sleep-friendly". |
-| 5 | **Mindspark Minute** | `@MindsparkMinute` | Menekankan "fakta dalam seminit". |
-| 6 | **Paperlight Facts** | `@PaperlightFacts` | Padan terus dengan gaya seni paper-cutout di bawah. |
+| ⭐ 1 | **Wondrift** | `@Wondrift` | *Wonder* + *Drift* — "hanyut melalui keajaiban dunia". 2 suku kata, mudah sebut & eja dalam semua bahasa. **Cadangan utama.** |
+| 2 | **Oddlume** | `@Oddlume` | *Odd* (pelik) + *Lume* (cahaya) — "menerangi perkara pelik". |
+| 3 | **Papyrlume** | `@Papyrlume` | *Papyrus* (kertas purba) + *Lume* — padan terus dengan gaya seni potongan kertas. |
+
+Slogan: **"Drift through the world's strangest wonders."**
 
 ### Sebelum muktamadkan nama (WAJIB)
-1. Cari nama di YouTube, Instagram, TikTok — pastikan tiada channel besar guna nama sama/hampir sama.
+1. Taip `@Wondrift` semasa cipta handle di YouTube — jika YouTube benarkan, handle itu milik anda. Daftar **hari ini** sebelum orang lain ambil.
 2. Semak tanda dagangan: **USPTO** (tmsearch.uspto.gov), **WIPO Global Brand Database**, **MyIPO** (Malaysia).
-3. Semak domain `.com` (cth. curioatlas.com) — beli jika ada (~USD 10/tahun) untuk email & laman.
+3. Semak domain `.com` (cth. wondrift.com — semak di Namecheap / Porkbun) — beli jika ada (~USD 10/tahun) untuk email & laman.
 4. Daftar handle yang **sama** di YouTube, TikTok, Instagram, X, Threads pada hari yang sama.
 
-> Saya tidak dapat menjamin nama ini bebas tanda dagangan — langkah 1–2 di atas mesti anda buat sendiri.
+> Carian web tidak sama dengan semakan rasmi tanda dagangan — buat langkah 2 sebelum melabur dalam merchandise.
 
 ## B. Gaya seni (art direction) — pilih SATU dan kekal
 
@@ -46,16 +49,16 @@ Contoh `[SUBJECT]`: *a giant squid in the deep ocean*, *the planet Saturn and it
 **Peraturan penggunaan AI:** semak terma alat (pilih pelan yang benarkan guna komersial), jangan sebut nama artis hidup atau watak berjenama dalam prompt, simpan prompt + tarikh dalam tracker sebagai bukti asal-usul.
 
 ## C. Gambar profil (logo) & banner
-- `assets/logo.svg` — globe gaya potongan kertas dengan bintang "curio" + inisial **CA**. Asal & dilukis untuk projek ini — 100% milik anda.
+- `assets/logo.svg` — globe gaya potongan kertas dengan bintang "wonder" + huruf **W**. Asal & dilukis untuk projek ini — 100% milik anda.
 - `assets/banner.svg` — 2560×1440, kandungan penting dalam zon selamat tengah 1546×423.
 - Versi PNG siap: `assets/logo.png` (800×800) & `assets/banner.png` (2560×1440) — terus upload ke YouTube.
 - Mahu ubah? Edit fail SVG (Inkscape / Figma / Canva), kemudian eksport semula ke PNG.
 
 ## D. Teks "About" channel (salin terus)
-> **Curio Atlas** — the world's strangest facts, mapped one short at a time. 🌍
-> Space, deep oceans, lost history, and the weird science of your own body — explained in under a minute.
+> **Wondrift** — drift through the world's strangest wonders. 🌍
+> One strange fact at a time — space, deep oceans, lost history, and the weird science of your own body.
 > New Shorts daily. Long-form deep dives every week.
-> 📩 Business: hello@curioatlas.com  *(tukar kepada email anda)*
+> 📩 Business: hello@wondrift.com  *(tukar kepada email anda)*
 
 **Keyword channel:** facts, science facts, space, history, mysteries, what if, geography, ocean, curiosity, education
 

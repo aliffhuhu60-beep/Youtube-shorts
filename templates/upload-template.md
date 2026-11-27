@@ -7,7 +7,7 @@
 ```
 [One-sentence summary of the fact.]
 
-🌍 Curio Atlas — the world's strangest facts, one short at a time.
+🌍 Wondrift — the world's strangest facts, one short at a time.
 ▶️ Watch the full deep dive: [link to related long video]
 
 Sources:
@@ -15,9 +15,9 @@ Sources:
 • [source 2 link]
 
 Music: [track name] — YouTube Audio Library
-Visuals: original illustrations by Curio Atlas [+ stock credits if any]
+Visuals: original illustrations by Wondrift [+ stock credits if any]
 
-#shorts #facts #[topic] #science #curioatlas
+#shorts #facts #[topic] #science #wondrift
 ```
 
 ## Settings
@@ -26,5 +26,5 @@ Visuals: original illustrations by Curio Atlas [+ stock credits if any]
 - Related video: link to a long-form video (once you have one)
 - Category: Education
 - Language: English · Caption: English
-- Tags (only a few needed): topic, curio atlas, facts
+- Tags (only a few needed): topic, wondrift, facts
 - Comment pin: ask a question — e.g. *"Would you rather visit Saturn or Venus? 👇"*
