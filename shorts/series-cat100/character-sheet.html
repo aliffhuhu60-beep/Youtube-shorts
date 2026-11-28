@@ -1,0 +1,27 @@
+<!doctype html><html><head><meta charset="utf-8">
+<style>html,body{margin:0;width:1080px;height:1920px;overflow:hidden}
+svg text{font-family:Inter,sans-serif}</style></head><body>
+<script src="cats.js"></script>
+<script>
+const W = 1080, H = 1920;
+let s = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${PAL.sky1}"/><stop offset="1" stop-color="${PAL.sky2}"/></linearGradient></defs>
+<rect width="${W}" height="${H}" fill="url(#sky)"/>
+<circle cx="820" cy="250" r="120" fill="#FCE4B8" opacity=".75"/>
+<path d="M0 1520 L80 1380 L160 1450 L220 1300 L330 1420 L420 1340 L520 1440 L640 1290 L760 1420 L860 1350 L1000 1460 L1080 1380 V1920 H0Z" fill="${PAL.shadow}" opacity=".55"/>
+<rect y="1560" width="${W}" height="360" fill="${PAL.ground}"/>
+<text x="540" y="170" text-anchor="middle" font-size="140" font-weight="900" fill="${INK}" letter-spacing="-4">100 DAYS</text>
+<text x="540" y="240" text-anchor="middle" font-size="54" font-weight="900" fill="#FFF4E0" letter-spacing="10">CAT APOCALYPSE</text>
+<text x="540" y="292" text-anchor="middle" font-size="28" font-weight="700" fill="${INK}" opacity=".75" letter-spacing="4">MEET THE FAMILY</text>`;
+const slots = [['biscuit', 290, 760, 'determined'], ['sage', 790, 760, 'determined'], ['pickles', 290, 1270, 'happy'], ['bean', 790, 1270, 'neutral']];
+const faces = { biscuit: 'scared', sage: 'determined', pickles: 'happy', bean: 'neutral' };
+for (const [n, x, y] of slots) {
+  s += `<rect x="${x - 230}" y="${y - 400}" width="460" height="470" rx="36" fill="#FFF4E0" opacity=".35" stroke="${INK}" stroke-width="5"/>`;
+  s += cat(n, { x, y: y - 20, s: 1.1, face: faces[n], look: n === 'pickles' ? 1 : 0, tail: 0.6 });
+  s += `<text x="${x}" y="${y + 30}" text-anchor="middle" font-size="46" font-weight="900" fill="${INK}">${n.toUpperCase()}</text>
+        <text x="${x}" y="${y + 62}" text-anchor="middle" font-size="24" font-weight="700" fill="${INK}" opacity=".8">${CAST[n].trait}</text>`;
+}
+s += zombie({ x: 220, y: 1760, s: .55, sway: .5 }) + zombie({ x: 880, y: 1780, s: .6, sway: -.4, flip: true }) + zombie({ x: 560, y: 1800, s: .45, sway: 1 });
+s += `<text x="540" y="1880" text-anchor="middle" font-size="30" font-weight="800" fill="#FFF4E0" letter-spacing="6">AND THE SHAMBLERS</text></svg>`;
+document.body.innerHTML = s;
+</script></body></html>
