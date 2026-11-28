@@ -1,0 +1,247 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- 100 Days: Cat Apocalypse — Day 1. Rendered frame-by-frame by tools/render_frames.js. All art is original code. -->
+<style>
+  html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#000}
+  #stage{position:absolute;inset:0}
+  .ov{position:absolute;left:0;right:0;font-family:Inter,sans-serif;text-align:center;pointer-events:none}
+  #title{top:520px;font-weight:900;color:#FFF4E0;font-size:190px;letter-spacing:-6px;line-height:.9;
+         text-shadow:0 10px 0 #17131C,0 0 40px #FF5E5B99;-webkit-text-stroke:10px #17131C;paint-order:stroke fill}
+  #title small{display:block;font-size:64px;letter-spacing:12px;-webkit-text-stroke:6px #17131C;margin-top:18px;color:#FFC26B}
+  #hud{top:96px;left:48px;right:auto;text-align:left;font-weight:900;font-size:40px;color:#FFF4E0;
+       background:#17131Ccc;border:5px solid #FFC26B;border-radius:22px;padding:10px 22px;letter-spacing:2px}
+  #hud i{display:block;height:10px;margin-top:8px;border-radius:5px;background:linear-gradient(90deg,#FF5E5B 1%,#ffffff33 1%)}
+  #fact{top:250px;left:70px;right:70px;background:#FFF4E0;border:7px solid #17131C;border-radius:36px;padding:26px 30px;
+        box-shadow:0 14px 0 #17131C;transform-origin:50% 0}
+  #fact b{display:inline-block;background:#FF5E5B;color:#fff;border:5px solid #17131C;border-radius:18px;padding:6px 18px;
+          font-size:38px;letter-spacing:4px;font-weight:900}
+  #fact div{font-size:52px;font-weight:900;color:#17131C;margin-top:14px;line-height:1.05}
+  #ding{top:380px;font-weight:900;font-size:230px;color:#FFC300;-webkit-text-stroke:12px #17131C;paint-order:stroke fill;
+        text-shadow:0 12px 0 #17131C}
+  #grade{position:absolute;inset:0;pointer-events:none}
+</style></head>
+<body>
+<svg id="stage" xmlns="http://www.w3.org/2000/svg" width="1080" height="1920" viewBox="0 0 1080 1920"></svg>
+<canvas id="grade" width="1080" height="1920"></canvas>
+<div id="title" class="ov">DAY 1<small>OF 100</small></div>
+<div id="hud" class="ov">DAY 1/100<i></i></div>
+<div id="fact" class="ov"><b>CAT FACT</b><div>Cat ears swivel<br>almost 180°</div></div>
+<div id="ding" class="ov">DING!</div>
+<script src="../cats.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+const lerp = (a, b, k) => a + (b - a) * k;
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const ease = (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const easeOut = (x) => 1 - Math.pow(1 - x, 3);
+const back = (x) => { const c = 1.9; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+const blinkAt = (t, off) => ((t * 0.8 + off) % 3.4) < 0.12 ? 1 : 0;
+const ow = (z) => OUTLINE / z;
+const st = (z, w = 1) => `stroke="${INK}" stroke-width="${ow(z) * w}" stroke-linejoin="round" stroke-linecap="round"`;
+
+// ---------------------------------------------------------------- scenes (world space)
+function sky(top, mid, low, horizon = 1250) {
+  return `<defs><linearGradient id="sk" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="${top}"/><stop offset=".55" stop-color="${mid}"/><stop offset="1" stop-color="${low}"/></linearGradient>
+    <radialGradient id="sun" r=".5"><stop offset="0" stop-color="#FFE3A3"/><stop offset=".35" stop-color="#FFB36B" stop-opacity=".9"/><stop offset="1" stop-color="#FF7A59" stop-opacity="0"/></radialGradient></defs>
+    <rect x="-1200" y="-800" width="4400" height="${horizon + 800}" fill="url(#sk)"/>`;
+}
+function city(z, y = 1250) {
+  let s = `<path d="M-1200 ${y} ${Array.from({length: 40}, (_, i) => `L${-1200 + i * 110} ${y - 60 - ((i * 37) % 7) * 28} L${-1200 + i * 110 + 80} ${y - 60 - ((i * 37) % 7) * 28}`).join(' ')} L3200 ${y} Z" fill="#3A2440"/>`;
+  for (const sx of [-300, 420, 1700]) s += `<path d="M${sx} ${y - 200} q-60 -200 40 -380 q90 -160 -20 -380" fill="none" stroke="#4A2F4F" stroke-width="90" stroke-linecap="round" opacity=".55"/>`;
+  return s;
+}
+function sceneExt(t, z) {
+  let s = sky('#2B1B3F', '#B83B5E', '#F08A4B') + `<circle cx="1180" cy="1120" r="420" fill="url(#sun)"/>` + city(z);
+  // house
+  s += `<rect x="-1200" y="1440" width="4400" height="1400" fill="#2E2A3B"/>
+    <path d="M300 760 L800 420 L1300 760 Z" fill="#3A2440" ${st(z)}/>
+    <path d="M800 420 L1300 760 L1050 760 Z" fill="#2A1A30"/>
+    <rect x="360" y="740" width="880" height="720" fill="#6A4A6E" ${st(z)}/>
+    <rect x="900" y="740" width="340" height="720" fill="#523755"/>
+    <rect x="360" y="740" width="880" height="720" fill="none" stroke="#FF9F6B" stroke-width="14" opacity=".35" transform="translate(-7 0)"/>
+    <defs><radialGradient id="win" r=".75"><stop offset="0" stop-color="#FFE7A8"/><stop offset="1" stop-color="#FF9F43"/></radialGradient></defs>
+    <circle cx="800" cy="1020" r="420" fill="#FFC26B" opacity=".12"/>
+    <rect x="610" y="880" width="380" height="290" fill="url(#win)" ${st(z)}/>`;
+  // cat silhouettes in the window
+  s += `<g filter="url(#sil)">` +
+       cat('sage', { x: 680, y: 1168, s: .38, cam: z, light: 'warm' }) + cat('biscuit', { x: 760, y: 1168, s: .38, cam: z }) +
+       cat('pickles', { x: 860, y: 1168, s: .38, cam: z, blink: blinkAt(t, 1) }) + cat('bean', { x: 930, y: 1168, s: .38, cam: z, face: 'sleep' }) + `</g>`;
+  s += `<path d="M800 880 v290 M610 1025 h380" ${st(z, 1.4)}/>
+    <rect x="590" y="1160" width="420" height="34" fill="#3A2440" ${st(z)}/>
+    <rect x="420" y="1180" width="140" height="280" fill="#3A2440" ${st(z)}/><circle cx="535" cy="1330" r="9" fill="#FFC26B"/>
+    ${Array.from({length: 22}, (_, i) => `<rect x="${-200 + i * 80}" y="1470" width="26" height="120" fill="#1E1A28" ${st(z, .7)}/>`).join('')}
+    <rect x="-200" y="1500" width="1800" height="20" fill="#1E1A28" ${st(z, .7)}/>`;
+  return s;
+}
+function room(t, z) {
+  // living room: teal walls, warm lamp, red window light
+  let s = `<defs><linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#123642"/><stop offset="1" stop-color="#1F5363"/></linearGradient>
+    <linearGradient id="flr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7B4A2D"/><stop offset="1" stop-color="#4C2C1A"/></linearGradient>
+    <radialGradient id="lamp" r=".5"><stop offset="0" stop-color="#FFD08A" stop-opacity=".75"/><stop offset="1" stop-color="#FFB060" stop-opacity="0"/></radialGradient>
+    <radialGradient id="redl" r=".5"><stop offset="0" stop-color="#FF5E5B" stop-opacity=".45"/><stop offset="1" stop-color="#FF5E5B" stop-opacity="0"/></radialGradient>
+    <linearGradient id="rsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5A1E3F"/><stop offset="1" stop-color="#F0624B"/></linearGradient></defs>
+    <rect x="-800" y="-400" width="3600" height="1900" fill="url(#wall)"/>
+    ${Array.from({length: 30}, (_, i) => `<rect x="${-800 + i * 120}" y="-400" width="40" height="1900" fill="#ffffff" opacity=".025"/>`).join('')}
+    <rect x="-800" y="1500" width="3600" height="900" fill="url(#flr)"/>
+    ${Array.from({length: 14}, (_, i) => `<path d="M-800 ${1540 + i * 50 + i * i * 4} H2800" stroke="#3A2113" stroke-width="${ow(z) * .5}" opacity=".6"/>`).join('')}
+    <rect x="-800" y="1470" width="3600" height="34" fill="#0E2A33" ${st(z)}/>`;
+  // door with cat flap
+  s += `<rect x="160" y="760" width="340" height="740" fill="#8A5634" ${st(z)}/><rect x="380" y="760" width="120" height="740" fill="#6B3F24"/>
+    <rect x="200" y="800" width="260" height="280" rx="10" fill="none" ${st(z, .6)}/><rect x="200" y="1110" width="260" height="200" rx="10" fill="none" ${st(z, .6)}/>
+    <circle cx="455" cy="1150" r="16" fill="#FFC93C" ${st(z, .7)}/>
+    <rect x="270" y="1380" width="120" height="104" rx="18" fill="#5A3520" ${st(z)}/><path d="M276 1392 h108" ${st(z, .6)}/>`;
+  // window (red sky) + curtains
+  s += `<rect x="1460" y="700" width="420" height="440" fill="url(#rsky)" ${st(z)}/>
+    <circle cx="1720" cy="960" r="70" fill="#FFB36B" opacity=".8"/>
+    <path d="M1460 1060 L1520 1010 L1580 1040 L1640 980 L1700 1030 L1760 990 L1880 1050 V1140 H1460Z" fill="#2B1B3F"/>
+    <path d="M1670 700 v440 M1460 920 h420" ${st(z, 1.3)}/>
+    <path d="M1420 660 q60 240 0 520 h70 q40 -260 0 -520 Z M1920 660 q-60 240 0 520 h-70 q-40 -260 0 -520 Z" fill="#A23B5E" ${st(z)}/>
+    <rect x="1430" y="1140" width="480" height="40" fill="#0E2A33" ${st(z)}/>
+    <ellipse cx="1660" cy="1380" rx="520" ry="380" fill="url(#redl)"/>`;
+  // lamp, sofa, rug, bowl
+  s += `<ellipse cx="1000" cy="900" rx="760" ry="700" fill="url(#lamp)"/>
+    <path d="M940 1470 L960 860 L1040 860 L1060 1470" fill="none" ${st(z, .8)}/><path d="M900 860 L940 720 L1060 720 L1100 860 Z" fill="#FFD37A" ${st(z)}/>
+    <rect x="620" y="1180" width="320" height="300" rx="40" fill="#C9485B" ${st(z)}/><rect x="600" y="1300" width="360" height="180" rx="36" fill="#A73748" ${st(z)}/>
+    <ellipse cx="980" cy="1580" rx="420" ry="70" fill="#3E7C88" ${st(z)}/><ellipse cx="980" cy="1580" rx="330" ry="46" fill="none" stroke="#FFC26B" stroke-width="${ow(z) * .8}" stroke-dasharray="20 16"/>
+    <path d="M1230 1520 q50 30 100 0 l-12 40 h-76 z" fill="#3A86FF" ${st(z)}/><text x="1280" y="1550" text-anchor="middle" font-family="Inter" font-weight="900" font-size="20" fill="#fff">EMPTY</text>`;
+  return s;
+}
+function roomCast(t, z, faces = {}) {
+  const f = (n, d) => faces[n] || d;
+  return cat('sage', { x: 330, y: 1500, s: 1, cam: z, face: f('sage', 'determined'), look: faces.sageLook ?? -1, blink: blinkAt(t, 0), tail: t * 2, breathe: t * 2.2 }) +
+    cat('biscuit', { x: 1250, y: 1500, s: 1, cam: z, face: f('biscuit', 'scared'), look: faces.biscuitLook ?? .6, blink: blinkAt(t, 1.3), tail: t * 2.5, breathe: t * 2.6, flip: true }) +
+    cat('pickles', { x: 1680, y: 1160, s: .95, cam: z, face: f('pickles', 'neutral'), look: faces.picklesLook ?? 1, blink: blinkAt(t, 2.1), tail: t * 3, breathe: t * 2.4, ear: faces.ear || 0, light: 'red' }) +
+    cat('bean', { x: 990, y: 1590, s: 1, cam: z, face: f('bean', 'sleep'), tail: t * 1.2, breathe: t * 1.8 });
+}
+function garden(t, z, zState = {}) {
+  let s = sky('#3B1430', '#C2384F', '#FF7A45', 1320) + `<circle cx="760" cy="1180" r="380" fill="url(#sun)"/>` + city(z, 1320);
+  s += `<rect x="-1200" y="1320" width="4400" height="1400" fill="#2B2335"/>
+    <path d="M-1200 1320 Q0 1290 1200 1330 T3200 1320 V1500 H-1200Z" fill="#3A2C45"/>
+    <path d="M200 1500 C210 1200 160 1000 120 820 M150 980 C60 900 40 820 0 760 M170 1100 C260 1000 300 940 360 880" fill="none" stroke="${INK}" stroke-width="${34 + 2 * ow(z)}" stroke-linecap="round"/>
+    <path d="M200 1500 C210 1200 160 1000 120 820 M150 980 C60 900 40 820 0 760 M170 1100 C260 1000 300 940 360 880" fill="none" stroke="#4A3A3F" stroke-width="34" stroke-linecap="round"/>
+    <path d="M1400 1520 V1080 M1700 1520 V1080 M1380 1080 H1720" ${st(z, 2)}/><path d="M1520 1080 V1320 M1600 1080 V1320" stroke="${INK}" stroke-width="${ow(z) * .8}"/>
+    <rect x="1490" y="1320" width="140" height="22" fill="#8A5634" ${st(z)}/>`;
+  s += zombie({ x: 1000, y: 1560, s: 1.1, cam: z, sway: zState.sway || 0, turn: zState.turn || 0, glow: zState.glow || 0 });
+  s += Array.from({length: 18}, (_, i) => `<path d="M${-300 + i * 140} 1700 l20 -60 l16 50 l18 -44 l14 54" fill="#1E1828" ${st(z, .7)}/>`).join('');
+  return s;
+}
+function windowFrame(z, open) {
+  // seen from inside, looking out (over Pickles' shoulder)
+  const pane = 1 - .85 * open;
+  return `<path d="M-1200 -800 H3200 V2800 H-1200Z M420 700 H1580 V1700 H420Z" fill="#123642" fill-rule="evenodd" ${st(z)}/>
+    <rect x="420" y="700" width="${580 * pane}" height="1000" fill="#7FD1FF" opacity="${.14 * pane}" ${st(z)}/>
+    <path d="M${420 + 580 * pane} 700 V1700" ${st(z, 1.6)}/>
+    <rect x="1000" y="700" width="580" height="1000" fill="#7FD1FF" opacity=".08" ${st(z)}/>
+    <path d="M1000 700 V1700" ${st(z, 1.6)}/>
+    <rect x="380" y="1690" width="1240" height="70" fill="#0E2A33" ${st(z)}/>
+    <path d="M340 640 q70 300 0 1100 h80 q40 -560 0 -1100Z M1660 640 q-70 300 0 1100 h-80 q-40 -560 0 -1100Z" fill="#A23B5E" ${st(z)}/>`;
+}
+function zombieBack(t, z, turn) {
+  let s = sky('#3B1430', '#C2384F', '#FF7A45', 1320) + city(z, 1320);
+  s += `<rect x="-1200" y="1320" width="4400" height="1400" fill="#2B2335"/>
+    <rect x="980" y="560" width="1400" height="1000" fill="#6A4A6E" ${st(z)}/>
+    <rect x="1180" y="760" width="420" height="320" fill="#FFC26B" ${st(z)}/>
+    <circle cx="1390" cy="920" r="380" fill="#FFC26B" opacity=".12"/>
+    <g filter="url(#sil)">${cat('sage', { x: 1260, y: 1078, s: .42, cam: z }) + cat('biscuit', { x: 1350, y: 1078, s: .42, cam: z }) + cat('pickles', { x: 1450, y: 1078, s: .42, cam: z }) + cat('bean', { x: 1530, y: 1078, s: .42, cam: z })}</g>
+    ${[[1252, 978], [1352, 974], [1452, 990], [1532, 1006]].map(([ex, ey]) => `<circle cx="${ex - 12}" cy="${ey}" r="7" fill="#E9FF70"/><circle cx="${ex + 12}" cy="${ey}" r="7" fill="#E9FF70"/>`).join('')}
+    <path d="M1390 760 v320 M1180 920 h420" ${st(z, 1.3)}/>`;
+  s += zombie({ x: 520, y: 1900, s: 2.1, cam: z, sway: t * 1.3, turn, glow: turn });
+  return s;
+}
+function endCard(t) {
+  const pulse = 1 + .04 * Math.sin(t * 6);
+  return `<rect x="-2000" y="-2000" width="6000" height="6000" fill="#17131C"/>
+    <rect x="40" y="380" width="485" height="900" rx="40" fill="#1F5363" stroke="#FFC26B" stroke-width="8"/>
+    <rect x="555" y="380" width="485" height="900" rx="40" fill="#5A1E3F" stroke="#FF5E5B" stroke-width="8"/>
+    <rect x="80" y="760" width="405" height="150" rx="20" fill="#C9485B" stroke="${INK}" stroke-width="7"/>
+    <rect x="80" y="900" width="405" height="40" fill="#A73748" stroke="${INK}" stroke-width="7"/>
+    <rect x="100" y="940" width="365" height="150" fill="#0B0910"/>
+    ${[[150, 1010], [230, 1020], [320, 1006], [400, 1030]].map(([ex, ey], i) => `<g opacity="${.6 + .4 * Math.sin(t * 3 + i)}"><circle cx="${ex - 14}" cy="${ey}" r="9" fill="#FFD93D"/><circle cx="${ex + 14}" cy="${ey}" r="9" fill="#FFD93D"/></g>`).join('')}
+    <rect x="640" y="620" width="320" height="560" fill="#8A5634" stroke="${INK}" stroke-width="7"/>
+    <rect x="740" y="1040" width="120" height="110" rx="18" fill="#5A3520" stroke="${INK}" stroke-width="7"/>
+    ${cat('pickles', { x: 800, y: 1150, s: .55, face: 'determined', look: 1, blink: blinkAt(t, 0), ear: .3 })}
+    <text x="282" y="520" text-anchor="middle" font-family="Inter" font-weight="900" font-size="150" fill="#FFC26B" stroke="${INK}" stroke-width="8" paint-order="stroke">A</text>
+    <text x="797" y="520" text-anchor="middle" font-family="Inter" font-weight="900" font-size="150" fill="#FF5E5B" stroke="${INK}" stroke-width="8" paint-order="stroke">B</text>
+    <text x="282" y="1220" text-anchor="middle" font-family="Inter" font-weight="900" font-size="40" fill="#FFF4E0">HIDE UNDER</text>
+    <text x="282" y="1262" text-anchor="middle" font-family="Inter" font-weight="900" font-size="40" fill="#FFF4E0">THE BED</text>
+    <text x="797" y="1220" text-anchor="middle" font-family="Inter" font-weight="900" font-size="40" fill="#FFF4E0">RUN FOR THE</text>
+    <text x="797" y="1262" text-anchor="middle" font-family="Inter" font-weight="900" font-size="40" fill="#FFF4E0">CAT FLAP</text>
+    <g transform="translate(540 1400) scale(${pulse})"><rect x="-430" y="-70" width="860" height="120" rx="60" fill="#FFC300" stroke="${INK}" stroke-width="8"/>
+    <text y="18" text-anchor="middle" font-family="Inter" font-weight="900" font-size="58" fill="${INK}">COMMENT A or B</text></g>
+    <text x="540" y="300" text-anchor="middle" font-family="Inter" font-weight="900" font-size="64" fill="#FFF4E0">WHAT SHOULD THEY DO?</text>`;
+}
+
+// ---------------------------------------------------------------- shots (one per narration line)
+// cam keyframes: [k, x, y, zoom, rotDeg]  (k = progress through the line 0..1)
+const SHOTS = [
+  { scene: 'ext',    cam: [[0, 800, 1080, .72, 0], [1, 800, 1010, 1.6, 0]] },                         // 0 DAY 1 — dolly to the window
+  { scene: 'room',   cam: [[0, 380, 1300, 1.25, 0], [1, 340, 1250, 1.85, -1]], faces: {} },           // 1 Sage by the door
+  { scene: 'room',   cam: [[0, 380, 1250, 1.85, -1], [.12, 1200, 1300, 1.7, 2], [.25, 1250, 1300, 1.8, 0], [1, 1250, 1290, 1.95, 0]], faces: { biscuitLook: .3 } }, // 2 whip-pan to Biscuit
+  { scene: 'room',   cam: [[0, 1250, 1300, 1.5, 0], [.5, 1640, 1050, 1.6, 0], [1, 1660, 1030, 1.75, 1]], faces: { ear: 'twitch' } }, // 3 pan to Pickles
+  { scene: 'room',   cam: [[0, 1680, 1000, 2.9, -2], [1, 1675, 990, 3.25, 2]], faces: { ear: 'swivel' }, fact: true }, // 4 cat fact close-up
+  { scene: 'win',    cam: [[0, 1000, 1250, .72, 0], [1, 1000, 1250, .8, 0]], open: [0, 1] },         // 5 push the window
+  { scene: 'win',    cam: [[0, 1000, 1250, .8, 0], [.25, 1000, 1240, 1.85, -6], [1, 1000, 1230, 1.95, -6]], open: [1, 1], shake: .25 }, // 6 reveal
+  { scene: 'win',    cam: [[0, 1000, 1230, 1.95, -6], [1, 1000, 1190, 2.45, -3]], open: [1, 1], pulse: true },               // 7 creep in
+  { scene: 'room',   cam: [[0, 990, 1450, 2.2, 0], [.12, 990, 1440, 3.1, 4], [1, 990, 1440, 3.3, 4]], faces: { bean: 'neutral' }, ding: true, shake: .12 }, // 8 DING
+  { scene: 'room',   cam: [[0, 1000, 1150, .78, 0], [1, 1000, 1150, .62, 0]], faces: { sage: 'scared', biscuit: 'scared', pickles: 'scared', bean: 'happy', sageLook: 1, biscuitLook: -1, picklesLook: -1 } }, // 9 family freezes
+  { scene: 'zback',  cam: [[0, 760, 1300, .82, 2], [1, 1000, 1180, 1.12, 4]], turn: [0, 1] },          // 10 the shambler turns
+  { scene: 'end',    cam: [[0, 540, 960, 1, 0], [1, 540, 960, 1, 0]] },                                 // 11 A or B
+];
+
+let STARTS = [], DURS = [];
+window.setup = (d) => { DURS = d.durations; let a = 0; STARTS = DURS.map(x => (a += x) - x); };
+
+function camAt(shot, k) {
+  const c = shot.cam;
+  let i = 0; while (i < c.length - 2 && k > c[i + 1][0]) i++;
+  const [k0, ...a] = c[i], [k1, ...b] = c[i + 1];
+  const e = ease(clamp((k - k0) / (k1 - k0 || 1)));
+  return a.map((v, j) => lerp(v, b[j], e));
+}
+
+window.renderFrame = (t) => {
+  let i = STARTS.length - 1; while (i > 0 && t < STARTS[i]) i--;
+  const sh = SHOTS[i], d = DURS[i], lt = t - STARTS[i], k = clamp(lt / d);
+  let [cx, cy, z, r] = camAt(sh, k);
+  if (sh.shake) { const a = sh.shake * 30 * Math.exp(-lt * 3); cx += a * Math.sin(lt * 61); cy += a * Math.cos(lt * 47); r += a * .05 * Math.sin(lt * 33); }
+  const faces = Object.assign({}, sh.faces || {});
+  if (faces.ear === 'twitch') faces.ear = k > .45 ? .7 * Math.abs(Math.sin((k - .45) * 12)) * Math.exp(-(k - .45) * 4) + .25 : 0;
+  if (faces.ear === 'swivel') faces.ear = .5 + .5 * Math.sin(lt * 2.4 - 1.5);
+  if (i === 3) faces.picklesLook = k > .45 ? 1 : 0;
+
+  let world = '';
+  if (sh.scene === 'ext') world = sceneExt(t, z);
+  if (sh.scene === 'room') world = room(t, z) + roomCast(t, z, faces);
+  if (sh.scene === 'win') {
+    const open = lerp(sh.open[0], sh.open[1], easeOut(clamp(k * 1.4)));
+    world = garden(t, z, { sway: t * 1.2, glow: i >= 6 ? .6 : 0 }) + windowFrame(z, open) +
+      `<g filter="url(#dim)">${cat('pickles', { x: 470, y: 2050, s: 2.0, cam: z, flip: true, look: 1, tail: t * 3, light: 'red' })}</g>`;
+  }
+  if (sh.scene === 'zback') world = zombieBack(t, z, easeOut(clamp((k - .15) / .7)));
+  if (sh.scene === 'end') world = endCard(t);
+
+  $('stage').innerHTML = `<defs>
+      <filter id="sil"><feColorMatrix values="0 0 0 0 .09  0 0 0 0 .07  0 0 0 0 .11  0 0 0 1 0"/></filter>
+      <filter id="dim"><feColorMatrix values=".35 0 0 0 0  0 .25 0 0 0  0 0 .32 0 0  0 0 0 1 0"/></filter></defs>
+    <g transform="translate(540 960) rotate(${r}) scale(${z}) translate(${-cx} ${-cy})">${world}</g>`;
+
+  // overlays
+  const tk = clamp(lt / .45);
+  $('title').style.opacity = i === 0 ? 1 : 0;
+  $('title').style.transform = `scale(${i === 0 ? back(tk) * (1 + .02 * Math.sin(t * 30) * Math.exp(-lt * 5)) : 1}) rotate(-3deg)`;
+  $('hud').style.opacity = i > 0 && i < 11 ? 1 : 0;
+  $('fact').style.opacity = sh.fact ? clamp(lt / .3) * clamp((d - lt) / .3) : 0;
+  $('fact').style.transform = `scale(${sh.fact ? back(clamp(lt / .4)) : 1})`;
+  $('ding').style.opacity = sh.ding ? clamp(1 - (lt - .9) / .5) : 0;
+  $('ding').style.transform = `scale(${sh.ding ? back(clamp(lt / .3)) : 1}) rotate(${8 * Math.sin(lt * 20) * Math.exp(-lt * 3)}deg)`;
+
+  // grade: vignette + red heartbeat pulse during the stare-down
+  const g = $('grade').getContext('2d');
+  g.clearRect(0, 0, 1080, 1920);
+  const v = g.createRadialGradient(540, 820, 300, 540, 960, 1150);
+  const pulse = sh.pulse || i === 6 ? .25 + .2 * Math.max(0, Math.sin(lt * 8.7)) : 0;
+  v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, pulse ? `rgba(120,0,20,${.55 + pulse})` : 'rgba(10,5,15,.55)');
+  g.fillStyle = v; g.fillRect(0, 0, 1080, 1920);
+};
+</script></body></html>

@@ -9,7 +9,10 @@ Semua watak dilukis dalam kod (`cats.js`) supaya rupa mereka **sama tepat** dala
 | Panjang | 35–60 saat |
 | Tajuk | `Day X/100: <kejadian> 🐱🧟` (cth. `Day 1/100: The Day The Humans Stopped Coming Home`) |
 | Pembukaan (0–2 s) | Kaunter **DAY X/100** + bahaya terus kelihatan. Tiada intro. |
-| Narator | Kokoro `bm_george` (suara Wondrift). Kucing **tidak bercakap** — reaksi & "meow" teks sahaja. |
+| Narator | Kokoro **`af_heart`** (`--lang en-us --speed 0.92`), suara pencerita siri ini. Kucing **tidak bercakap** — reaksi ditunjuk melalui muka & teks. |
+| Bunyi | Muzik & SFX dijana sendiri (`tools/sfx_lib.py`, setiap episod ada `sound.py`) — tiada sampel luar, bebas copyright. |
+| Kamera | Setiap shot ada keyframe kamera sendiri (dolly, whip-pan, snap zoom, Dutch tilt, gegaran) dalam `scene.html`. |
+| Sari kata | `--caption-style paper --caption-size 17 --caption-margin 44`; baris kad grafik guna `|| -` (tiada sari kata). |
 | Fakta survival | Setiap episod ada **1 fakta kucing sebenar** yang menyelamatkan mereka (cth. kucing nampak dalam gelap ~6× lebih baik daripada manusia). Ini yang buat siri ini "Wondrift". |
 | Penutup | Cliffhanger + **pilihan penonton**: "Should they ___? Comment A or B." Episod seterusnya ikut undian terbanyak. |
 | Nada | Thriller ringan + komedi untuk remaja/dewasa. Zombie **menakutkan tapi tidak ganas/berdarah**. Bukan "made for kids". |
@@ -39,3 +42,12 @@ Manusia pemilik mereka (tidak pernah ditunjuk muka) hilang pada Day 1 — mister
 - Format "100 Days" + kaunter hari → penonton subscribe untuk tahu Day seterusnya.
 - Pilihan penonton → komen tinggi (isyarat algoritma kuat).
 - Watak konsisten & unik → penonton sayang watak, bukan sekadar video.
+
+## Cara hasilkan satu episod
+```bash
+E=shorts/series-cat100/day01
+.venv/bin/python tools/voice_kokoro.py $E/script.txt --out $E --voice af_heart --lang en-us --speed 0.92
+.venv/bin/python $E/sound.py
+node tools/render_frames.js $E/scene.html <saat> $E/frames 30 $E/durations.txt
+python3 tools/make_short.py --frames $E/frames --audio $E/mix.mp3 --srt $E/subs.srt --caption-pos bottom --caption-style paper --caption-size 17 --caption-margin 44 --out $E/final.mp4
+```

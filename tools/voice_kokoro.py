@@ -15,7 +15,8 @@ Setup (once):
 
 Example:
   .venv/bin/python tools/voice_kokoro.py shorts/ep02-saturn/script.txt --out shorts/ep02-saturn
-Brand voice: bm_george (British male storyteller), speed 0.95.
+Voices: facts = bm_george (speed 0.95); Cat Apocalypse story series = af_heart --lang en-us (speed 0.92).
+A line "[pause 1.5]" (optionally "[pause 1.5] || *DING*") inserts silence for a sound-effect beat.
 """
 import argparse
 import subprocess
@@ -54,6 +55,7 @@ def main() -> None:
     ap.add_argument("--models", default="models", help="folder with kokoro-v1.0.onnx and voices-v1.0.bin")
     ap.add_argument("--voice", default="bm_george")
     ap.add_argument("--speed", type=float, default=0.95)
+    ap.add_argument("--lang", default="en-gb", help="en-gb for British voices (bm_/bf_), en-us for American (am_/af_)")
     a = ap.parse_args()
 
     lines = [l.strip() for l in Path(a.script).read_text().splitlines() if l.strip()]
@@ -67,11 +69,15 @@ def main() -> None:
         # "spoken text || caption text" lets numbers be spoken as words but shown as digits
         spoken, _, caption = line.partition("||")
         spoken, caption = spoken.strip(), (caption.strip() or spoken.strip())
-        samples, sr = tts.create(spoken, voice=a.voice, speed=a.speed, lang="en-gb")
+        if spoken.startswith("[pause"):  # "[pause 1.5] || *DING*" -> silence (for SFX beats), optional caption
+            secs = float(spoken.strip("[]").split()[1])
+            samples = np.zeros(int(secs * sr), dtype=np.float32)
+        else:
+            samples, sr = tts.create(spoken, voice=a.voice, speed=a.speed, lang=a.lang)
         samples = np.concatenate([samples, np.zeros(int(GAP * sr), dtype=samples.dtype)])
         d = len(samples) / sr
-        parts = chunk(caption)
-        total_chars = sum(len(p) for p in parts)
+        parts = [] if caption.startswith("[pause") or caption == "-" else chunk(caption)  # "|| -" = no captions
+        total_chars = max(1, sum(len(p) for p in parts))
         pt = t + 0.03
         for p in parts:
             pd = (d - GAP - 0.05) * len(p) / total_chars

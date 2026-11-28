@@ -40,6 +40,8 @@ def main() -> None:
                     "the last image is stretched to the end of the audio. Default: equal split")
     ap.add_argument("--caption-pos", choices=["center", "bottom"], default="center",
                     help="caption position; bottom sits just above the YouTube Shorts UI")
+    ap.add_argument("--caption-size", type=int, default=20, help="caption font size (ASS units, default 20)")
+    ap.add_argument("--caption-margin", type=int, default=62, help="bottom margin for --caption-pos bottom (default 62)")
     ap.add_argument("--caption-style", choices=["paper", "neon"], default="paper",
                     help="paper = cream text, navy outline; neon = white text, magenta glow outline")
     ap.add_argument("--out", required=True, help="output .mp4")
@@ -94,10 +96,10 @@ def finish(a, cmd, parts, audio_idx, total, what):
     vlast = "vc"
     if a.srt:
         srt = str(Path(a.srt).resolve()).replace("\\", "/").replace(":", r"\:").replace("'", r"\'")
-        pos = "Alignment=2,MarginV=62" if a.caption_pos == "bottom" else "Alignment=10,MarginV=0"
+        pos = f"Alignment=2,MarginV={a.caption_margin}" if a.caption_pos == "bottom" else "Alignment=10,MarginV=0"
         look = {"paper": "FontName=Montserrat ExtraBold,PrimaryColour=&H00E1EDF4,OutlineColour=&H003D2114,Outline=3,Shadow=1",
                 "neon": "FontName=Inter Black,PrimaryColour=&H00FFFFFF,OutlineColour=&H00B56FFF,Outline=2.5,Shadow=0"}
-        style = f"{look[a.caption_style]},Fontsize=20,Bold=1,BorderStyle=1,{pos}"
+        style = f"{look[a.caption_style]},Fontsize={a.caption_size},Bold=1,BorderStyle=1,{pos}"
         parts.append(f"[vc]subtitles='{srt}':force_style='{style}'[vs]")
         vlast = "vs"
 
